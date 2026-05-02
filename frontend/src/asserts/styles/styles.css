@@ -1,0 +1,938 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ccc;
+    padding: 10px 10px; /* 調整header兩側的padding */
+    background-color: #F5F5DC; /* 米白色背景 */
+    max-width: 1200px; /* 設定最大寬度 */
+    margin: 0 auto; /* 使header在中間 */
+    position: relative; /* 使按鈕可以絕對定位 */
+}
+
+body {
+    font-family: "PingFang SC", "Microsoft JhengHei", Arial, sans-serif; /* 中文優先 PingFang，其次為微軟正黑體，然後是無襯線字體 */
+    margin: 0;
+    background-color: #F5F5DC; /* 米白色背景 */
+    padding: 0 10px; /* 兩側加10px的空間 */
+}
+
+
+/* 右側的按鈕區域移到右上角 */
+.header-right {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.header-left h1 {
+    margin: 0;
+}
+
+.header-left a {
+    color: #1f1b17;
+    text-decoration: none;
+}
+
+.header-left a:visited {
+    color: #1f1b17;
+}
+
+.header-right .button {
+    margin-left: 15px;
+    text-decoration: none;
+    padding: 5px 10px;
+    background-color: #B18C8C; /* 莫蘭迪紫 */
+    color: white;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.header-right .button:hover {
+    background-color: #8C6A6A; /* 按鈕的深紫色 */
+}
+
+
+
+
+/* 搜索栏样式 */
+.search-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 10px 10px; /* 調整header兩側的padding */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #F5F5DC; /* 米白色背景 */
+    width: 100%;
+    box-sizing: border-box; /* 包括内边距计算宽度 */
+}
+
+/* 宠物列表样式 */
+.pet-list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 每行显示5个 */
+    gap: 20px !important; /* 增加间距并使用 !important 强制应用 */
+    grid-row-gap: 20px !important;
+    width: 100%;
+    max-width: 1200px; /* 保证宽度不超过父容器 */
+    padding: 10px 10px; /* 調整header兩側的padding */
+    box-sizing: border-box; /* 包括内边距计算宽度 */
+}
+
+/* 修改宠物项样式 */
+.pet-card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 添加阴影 */
+    padding: 15px; /* 调整内边距 */
+    border-radius: 10px;
+    text-align: center;
+    background-color: #ffffff; /* 白色背景 */
+    display: inline-block;
+    transition: box-shadow 0.3s ease; /* 鼠标悬停时的过渡效果 */
+    margin: 5px; /* 为每张卡片增加外边距 */
+}
+
+.pet-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* 鼠标悬停时加深阴影 */
+}
+
+img.pet-photo {
+    width: 200px; /* 寬度設定為 200px */
+    height: 200px; /* 高度固定為 200px */
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px; /* 調整圖片和文字的間距 */
+}
+
+.adopt-btn {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #B18C8C; /* 莫蘭迪紫 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.adopt-btn:hover {
+    background-color: #8C6A6A; /* 按鈕的深紫色 */
+}
+
+/* 所有按鈕樣式 */
+button {
+    padding: 10px 20px;
+    background-color: #B18C8C; /* 按鈕顏色 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 150px; /* 設定按鈕寬度 */
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #8C6A6A; /* 滑鼠懸停顏色 */
+}
+
+/*主頁下方切頁*/
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.nav-button {
+    padding: 5px 10px;
+    background-color: #B18C8C; /* 莫蘭迪紫 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.nav-button:hover {
+    background-color: #8C6A6A; /* 按鈕的深紫色 */
+}
+
+.page-select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin: 0 10px;
+    background-color: #F5F5DC; /* 米白色背景 */
+}
+
+.page-info {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+    background-color: #F5F5DC; /* 米白色背景 */
+}
+
+/* 所有表單長相 */
+.form-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px; /* 限制表單寬度 */
+    margin: 0 auto; /* 使表單居中 */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+label {
+    font-size: 16px;
+}
+
+input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 250px; /* 設定輸入框寬度 */
+}
+
+.all-container {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 2px solid #ccc;
+    padding: 10px 10px; /* 調整header兩側的padding */
+    background-color: #F5F5DC; /* 米白色背景 */
+    max-width: 1200px; /* 設定最大寬度 */
+    margin: 0 auto; /* 使header在中間 */
+    position: relative; /* 使按鈕可以絕對定位 */
+}
+
+/* 固定右下角的向上箭頭按鈕 */
+#scrollToTopBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    color: white;
+    border: 2px solid #B18C8C; /* 設定邊框顏色和寬度 */
+    border-radius: 50%;
+    width: 50px; /* 設置寬度 */
+    height: 50px; /* 設置高度 */
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    display: none; /* 預設隱藏，只有在滾動到一定位置時才顯示 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    background-color: #B18C8C;
+}
+
+/* 當滑鼠懸停時變色 */
+#scrollToTopBtn:hover {
+    background-color: #8C6A6A;
+}
+
+/* Home search filters */
+.search-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 18px auto 28px;
+    padding: 24px;
+    border: 1px solid #ded8c4;
+    border-radius: 8px;
+    background-color: #fffdf1;
+    box-shadow: 0 10px 24px rgba(70, 57, 43, 0.08);
+    width: min(100%, 760px);
+    box-sizing: border-box;
+    align-items: center;
+}
+
+.search-section h3 {
+    width: min(100%, 520px);
+    margin: 0 0 2px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e7e0ca;
+    color: #2f2a24;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.search-section .form-row {
+    display: grid;
+    grid-template-columns: 120px minmax(220px, 360px);
+    gap: 14px;
+    align-items: center;
+    justify-content: center;
+    width: min(100%, 520px);
+    min-width: 0;
+}
+
+.search-section label {
+    color: #4d443b;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.search-section input,
+.search-section select {
+    width: 100%;
+    height: 42px;
+    padding: 8px 12px;
+    border: 1px solid #cfc7b8;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #2f2a24;
+    box-sizing: border-box;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-section input:focus,
+.search-section select:focus {
+    border-color: #9f7777;
+    box-shadow: 0 0 0 3px rgba(177, 140, 140, 0.18);
+}
+
+.search-section .search-button {
+    width: 160px;
+    height: 42px;
+    margin-top: 2px;
+    margin-left: 134px;
+    align-self: center;
+    border-radius: 6px;
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+    .search-section .form-row {
+        grid-template-columns: 110px minmax(0, 1fr);
+    }
+
+    .search-section .search-button {
+        margin-left: 124px;
+    }
+}
+
+@media (max-width: 560px) {
+    .search-section {
+        padding: 18px;
+    }
+
+    .search-section .form-row {
+        grid-template-columns: 1fr;
+        gap: 7px;
+    }
+
+    .search-section .search-button {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+/* Login and register pages */
+.auth-page {
+    min-height: 100vh;
+    padding: 0;
+    background:
+        linear-gradient(180deg, rgba(245, 245, 220, 0.96), rgba(241, 238, 204, 0.96)),
+        #F5F5DC;
+}
+
+.auth-header {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid #d9d0b9;
+}
+
+.auth-brand {
+    color: #1f1b17;
+    font-size: 24px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.auth-shell {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 76px);
+    padding: 52px 18px;
+    box-sizing: border-box;
+}
+
+.auth-card {
+    width: min(100%, 430px);
+    padding: 32px;
+    border: 1px solid #ded8c4;
+    border-radius: 8px;
+    background-color: #fffdf7;
+    box-shadow: 0 16px 40px rgba(70, 57, 43, 0.12);
+    box-sizing: border-box;
+}
+
+.auth-card-header {
+    margin-bottom: 24px;
+}
+
+.auth-kicker {
+    margin: 0 0 8px;
+    color: #9f7777;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.auth-card h1 {
+    margin: 0 0 8px;
+    color: #1f1b17;
+    font-size: 28px;
+}
+
+.auth-card p {
+    color: #665b50;
+    line-height: 1.6;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.auth-field label {
+    color: #4d443b;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.auth-field input {
+    width: 100%;
+    height: 44px;
+    padding: 9px 12px;
+    border: 1px solid #cfc7b8;
+    border-radius: 6px;
+    background-color: #fff;
+    box-sizing: border-box;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-field select,
+.auth-field textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #cfc7b8;
+    border-radius: 6px;
+    background-color: #fff;
+    box-sizing: border-box;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-field select {
+    height: 44px;
+}
+
+.auth-field textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.auth-field input:focus {
+    border-color: #9f7777;
+    box-shadow: 0 0 0 3px rgba(177, 140, 140, 0.18);
+}
+
+.auth-field select:focus,
+.auth-field textarea:focus {
+    border-color: #9f7777;
+    box-shadow: 0 0 0 3px rgba(177, 140, 140, 0.18);
+}
+
+.auth-submit {
+    width: 100%;
+    height: 44px;
+    margin-top: 6px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.auth-switch {
+    margin: 20px 0 0;
+    text-align: center;
+    font-size: 14px;
+}
+
+.auth-switch a {
+    color: #8C6A6A;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.adoption-page {
+    display: flex;
+    justify-content: center;
+    padding: 42px 18px;
+}
+
+.adoption-card {
+    width: min(100%, 520px);
+    padding: 32px;
+    border: 1px solid #ded8c4;
+    border-radius: 8px;
+    background-color: #fffdf7;
+    box-shadow: 0 16px 40px rgba(70, 57, 43, 0.12);
+    box-sizing: border-box;
+}
+
+.pet-detail-page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 42px 18px;
+    box-sizing: border-box;
+}
+
+.pet-detail-card {
+    display: grid;
+    grid-template-columns: minmax(280px, 420px) 1fr;
+    gap: 34px;
+    padding: 28px;
+    border: 1px solid #ded8c4;
+    border-radius: 8px;
+    background-color: #fffdf7;
+    box-shadow: 0 16px 40px rgba(70, 57, 43, 0.12);
+}
+
+.pet-detail-photo {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.pet-detail-photo-wrap {
+    position: relative;
+}
+
+.favorite-star-button {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid rgba(124, 92, 84, 0.22);
+    border-radius: 50%;
+    background-color: rgba(255, 253, 247, 0.94);
+    color: #8C6A6A;
+    font-size: 24px;
+    line-height: 1;
+    box-shadow: 0 6px 16px rgba(70, 57, 43, 0.16);
+}
+
+.favorite-star-button:hover {
+    background-color: #fffaf0;
+    color: #7b5b5b;
+}
+
+.favorite-star-button.is-favorited {
+    color: #d29a2a;
+}
+
+.pet-detail-info h2 {
+    margin: 0 0 18px;
+    color: #1f1b17;
+    font-size: 30px;
+}
+
+.pet-detail-info > .status-badge {
+    margin-bottom: 18px;
+}
+
+.pet-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.pet-detail-grid p {
+    margin: 0;
+    padding: 14px;
+    border: 1px solid #eee4cf;
+    border-radius: 6px;
+    background-color: #fffaf0;
+}
+
+.pet-detail-grid strong,
+.pet-detail-description strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #6d5f52;
+    font-size: 13px;
+}
+
+.pet-detail-grid span,
+.pet-detail-description p {
+    color: #241f1a;
+}
+
+.pet-detail-description {
+    margin-bottom: 24px;
+}
+
+.detail-adopt-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 170px;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 6px;
+    background-color: #B18C8C;
+    color: #fff;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.detail-adopt-button:hover {
+    background-color: #8C6A6A;
+}
+
+.detail-adopt-button-disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.pet-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.detail-secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-width: 140px;
+    height: 44px;
+    margin: 0;
+    padding: 0 18px;
+    border: 1px solid #B18C8C;
+    border-radius: 6px;
+    background-color: #fffdf7;
+    color: #8C6A6A;
+    font-weight: 800;
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: #efe6d4;
+    color: #4d443b;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.adoption-confirmations {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid #eee4cf;
+    border-radius: 8px;
+    background-color: #fffaf0;
+}
+
+.adoption-confirmations label {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: #4d443b;
+    line-height: 1.5;
+}
+
+.adoption-confirmations input {
+    width: auto;
+    height: auto;
+    margin-top: 4px;
+}
+
+.inline-link {
+    color: #8C6A6A;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.inline-link:hover {
+    text-decoration: underline;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    min-height: 26px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #4d443b;
+    background-color: #efe6d4;
+}
+
+.pet-card .status-badge {
+    margin: 4px auto 10px;
+}
+
+.status-pending,
+.pet-status-application_pending {
+    color: #775a18;
+    background-color: #fff0bf;
+}
+
+.status-contacted {
+    color: #25556f;
+    background-color: #dbeef8;
+}
+
+.status-approved,
+.pet-status-adopted {
+    color: #26613d;
+    background-color: #dff1e6;
+}
+
+.status-rejected {
+    color: #873d3d;
+    background-color: #f6dada;
+}
+
+.pet-status-available {
+    color: #3f6744;
+    background-color: #e3f1df;
+}
+
+.dashboard-page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 36px 18px;
+    box-sizing: border-box;
+}
+
+.dashboard-card {
+    margin-bottom: 22px;
+    padding: 28px;
+    border: 1px solid #ded8c4;
+    border-radius: 8px;
+    background-color: #fffdf7;
+    box-shadow: 0 12px 30px rgba(70, 57, 43, 0.1);
+}
+
+.dashboard-card h2 {
+    margin: 0 0 18px;
+    color: #1f1b17;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.profile-grid p {
+    margin: 0;
+    padding: 14px;
+    border: 1px solid #eee4cf;
+    border-radius: 6px;
+    background-color: #fffaf0;
+}
+
+.profile-grid strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #6d5f52;
+}
+
+.section-heading,
+.application-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.application-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.application-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid #eee4cf;
+    border-radius: 8px;
+    background-color: #fffaf0;
+}
+
+.application-item img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    background-color: #f1eadb;
+}
+
+.application-item h3,
+.application-item p {
+    margin: 0 0 8px;
+}
+
+.application-subtitle,
+.helper-text {
+    color: #6d6258;
+    line-height: 1.6;
+}
+
+.application-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+}
+
+.application-meta-grid p {
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid #eee4cf;
+    border-radius: 6px;
+    background-color: #fffdf7;
+}
+
+.application-meta-grid strong,
+.application-message strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #6d5f52;
+    font-size: 13px;
+}
+
+.application-message {
+    padding: 12px;
+    border: 1px solid #eee4cf;
+    border-radius: 6px;
+    background-color: #fffdf7;
+}
+
+.small-button,
+.admin-actions button {
+    width: auto;
+    min-width: 88px;
+    height: 36px;
+    margin: 0;
+    padding: 0 12px;
+    border-radius: 6px;
+    font-weight: 800;
+}
+
+.admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.admin-actions button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.admin-actions .action-contacted {
+    background-color: #7e96a8;
+}
+
+.admin-actions .action-approved {
+    background-color: #6c9778;
+}
+
+.admin-actions .action-rejected {
+    background-color: #b17878;
+}
+
+@media (max-width: 560px) {
+    .auth-shell {
+        padding: 32px 14px;
+    }
+
+    .auth-card {
+        padding: 24px;
+    }
+
+    .adoption-card {
+        padding: 24px;
+    }
+
+    .profile-grid,
+    .application-item {
+        grid-template-columns: 1fr;
+    }
+
+    .application-item img {
+        width: 100%;
+        height: 220px;
+    }
+
+    .section-heading,
+    .application-title-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 760px) {
+    .pet-detail-card {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .pet-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}

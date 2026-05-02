@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入</title>
+    <link rel="stylesheet" href="/src/asserts/styles/styles.css">
+    <link rel="icon" href="/src/asserts/favicon.ico" type="image/x-icon">
+</head>
+<body class="auth-page">
+    <header class="auth-header">
+        <a href="/" class="auth-brand">寵物領養資訊網</a>
+        <a href="/register-page" class="button">註冊</a>
+    </header>
+
+    <main class="auth-shell">
+        <section class="auth-card">
+            <div class="auth-card-header">
+                <p class="auth-kicker">會員登入</p>
+                <h1>歡迎回來</h1>
+                <p>登入後可以查看個人資料與領養紀錄。</p>
+            </div>
+
+            <form id="login-form" action="/api/login" method="POST" class="auth-form">
+                <div class="auth-field">
+                    <label for="username">使用者名稱</label>
+                    <input type="text" id="username" name="username" placeholder="請輸入使用者名稱" required>
+                </div>
+
+                <div class="auth-field">
+                    <label for="password">密碼</label>
+                    <input type="password" id="password" name="password" placeholder="請輸入密碼" required>
+                </div>
+
+                <button type="submit" class="auth-submit">登入</button>
+            </form>
+
+            <p class="auth-switch">還沒有帳號？<a href="/register-page">前往註冊</a></p>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById("login-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (!username || !password) {
+                alert("請輸入帳號與密碼");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:5000/api/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (!response.ok) {
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || "登入失敗");
+                    }
+                    throw new Error("伺服器回應格式錯誤");
+                }
+
+                const data = await response.json();
+                alert(data.message || "登入成功");
+                localStorage.setItem("currentUser", JSON.stringify(data.user));
+                window.location.href = "/src/templates/home.html";
+            } catch (error) {
+                console.error("登入錯誤:", error);
+                alert(error.message || "登入時發生錯誤");
+            }
+        });
+    </script>
+</body>
+</html>

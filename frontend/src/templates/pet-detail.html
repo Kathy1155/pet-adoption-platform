@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寵物詳細資料</title>
+    <link rel="stylesheet" href="/src/asserts/styles/styles.css">
+    <link rel="icon" href="/src/asserts/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <h1>寵物詳細資料</h1>
+        </div>
+        <div class="header-right">
+            <a href="/" class="button">返回首頁</a>
+        </div>
+    </header>
+
+    <main class="pet-detail-page">
+        <section id="pet-detail-card" class="pet-detail-card">
+            <p>資料載入中...</p>
+        </section>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const petId = params.get("id");
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const card = document.getElementById("pet-detail-card");
+        const petStatusText = {
+            available: "可領養",
+            application_pending: "申請中",
+            adopted: "已領養"
+        };
+
+        function displayValue(value) {
+            return value || "未提供";
+        }
+
+        function formatTags(value) {
+            if (!value) {
+                return "<span class='tag'>未提供</span>";
+            }
+
+            return String(value)
+                .split(",")
+                .map((tag) => `<span class="tag">${tag.trim()}</span>`)
+                .join("");
+        }
+
+        async function fetchFavoriteStatus(id) {
+            if (!currentUser) {
+                return false;
+            }
+
+            const response = await fetch(`http://localhost:5000/api/pets/${encodeURIComponent(id)}/favorite?username=${encodeURIComponent(currentUser.username)}`);
+            if (!response.ok) {
+                return false;
+            }
+
+            const data = await response.json();
+            return data.favorited;
+        }
+
+        async function toggleFavorite(id, favorited) {
+            if (!currentUser) {
+                alert("請先登入會員才能收藏寵物");
+                window.location.href = "/login";
+                return;
+            }
+
+            const response = await fetch(`http://localhost:5000/api/pets/${encodeURIComponent(id)}/favorite`, {
+                method: favorited ? "DELETE" : "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username: currentUser.username })
+            });
+
+            if (!response.ok) {
+                alert("收藏狀態更新失敗");
+                return;
+            }
+
+            fetchPetDetail();
+        }
+
+        async function fetchPetDetail() {
+            if (!petId) {
+                card.innerHTML = "<p>缺少寵物 ID，請回首頁重新選擇。</p>";
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/pets/${encodeURIComponent(petId)}`);
+
+                if (!response.ok) {
+                    throw new Error("無法取得寵物資料");
+                }
+
+                const pet = await response.json();
+                const adoptionId = pet.id || pet.shelter_id;
+                const adoptionUrl = `/adopt?pet_id=${encodeURIComponent(adoptionId)}`;
+                const status = pet.status || "available";
+                const isAvailable = status === "available";
+                const favorited = await fetchFavoriteStatus(adoptionId);
+
+                card.innerHTML = `
+                    <div class="pet-detail-photo-wrap">
+                        <img src="${displayValue(pet.photo_url)}" alt="${displayValue(pet.name || pet.shelter_id)}" class="pet-detail-photo">
+                        <button
+                            type="button"
+                            class="favorite-star-button ${favorited ? "is-favorited" : ""}"
+                            aria-label="${favorited ? "取消收藏" : "加入收藏"}"
+                            title="${favorited ? "取消收藏" : "加入收藏"}"
+                            onclick="toggleFavorite('${adoptionId}', ${favorited})"
+                        >${favorited ? "★" : "☆"}</button>
+                    </div>
+                    <div class="pet-detail-info">
+                        <p class="auth-kicker">收容編號 ${displayValue(pet.shelter_id)}</p>
+                        <h2>${displayValue(pet.name || `寵物 ${pet.shelter_id}`)}</h2>
+                        <span class="status-badge pet-status-${status}">${petStatusText[status] || status}</span>
+
+                        <div class="pet-detail-grid">
+                            <p><strong>種類</strong><span>${displayValue(pet.species)}</span></p>
+                            <p><strong>年齡</strong><span>${displayValue(pet.age)}</span></p>
+                            <p><strong>城市</strong><span>${displayValue(pet.city)}</span></p>
+                            <p><strong>性別</strong><span>${displayValue(pet.gender)}</span></p>
+                            <p><strong>體型</strong><span>${displayValue(pet.size)}</span></p>
+                            <p><strong>健康狀況</strong><span>${displayValue(pet.health_status)}</span></p>
+                            <p><strong>結紮</strong><span>${displayValue(pet.neutered)}</span></p>
+                            <p><strong>疫苗</strong><span>${displayValue(pet.vaccinated)}</span></p>
+                        </div>
+
+                        <div class="pet-detail-description">
+                            <strong>個性標籤</strong>
+                            <div class="tag-list">${formatTags(pet.personality_tags)}</div>
+                        </div>
+
+                        <div class="pet-detail-description">
+                            <strong>照護提醒</strong>
+                            <p>${displayValue(pet.care_notes)}</p>
+                        </div>
+
+                        <div class="pet-detail-description">
+                            <strong>詳細描述</strong>
+                            <p>${displayValue(pet.description)}</p>
+                        </div>
+
+                        <div class="pet-detail-actions">
+                            ${isAvailable
+                                ? `<a href="${adoptionUrl}" class="detail-adopt-button">我要申請領養</a>`
+                                : `<button type="button" class="detail-adopt-button detail-adopt-button-disabled" disabled>目前${petStatusText[status]}</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error("Pet detail error:", error);
+                card.innerHTML = "<p>資料載入失敗，請稍後再試。</p>";
+            }
+        }
+
+        fetchPetDetail();
+    </script>
+</body>
+</html>

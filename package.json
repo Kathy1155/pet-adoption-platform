@@ -1,0 +1,12 @@
+{
+  "name": "pet-adoption-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Combined local workspace for the pet adoption frontend and backend projects.",
+  "scripts": {
+    "install:frontend": "npm --prefix frontend install",
+    "install:backend": "npm --prefix backend install",
+    "start:frontend": "npm --prefix frontend start",
+    "start:backend": "npm --prefix backend start"
+  }
+}

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會員中心</title>
+    <link rel="stylesheet" href="/src/asserts/styles/styles.css">
+    <link rel="icon" href="/src/asserts/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <h1>會員中心</h1>
+        </div>
+        <div class="header-right">
+            <a href="/" class="button">返回首頁</a>
+        </div>
+    </header>
+
+    <main class="dashboard-page">
+        <section class="dashboard-card">
+            <p class="auth-kicker">Member Profile</p>
+            <h2 id="welcome-message">會員資料</h2>
+            <div class="profile-grid">
+                <p><strong>電話</strong><span id="phone"></span></p>
+                <p><strong>住址</strong><span id="address"></span></p>
+            </div>
+        </section>
+
+        <section class="dashboard-card">
+            <p class="auth-kicker">Saved Pets</p>
+            <h2>我的收藏</h2>
+            <div id="favorite-list" class="application-list">
+                <p>收藏清單載入中...</p>
+            </div>
+        </section>
+
+        <section class="dashboard-card">
+            <p class="auth-kicker">My Applications</p>
+            <h2>我的領養申請</h2>
+            <div id="application-list" class="application-list">
+                <p>申請紀錄載入中...</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const statusText = {
+            pending: "待審核",
+            contacted: "已聯絡",
+            approved: "核准領養",
+            rejected: "已駁回"
+        };
+
+        const petStatusText = {
+            available: "可領養",
+            application_pending: "申請中",
+            adopted: "已領養"
+        };
+
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const applicationList = document.getElementById("application-list");
+        const favoriteList = document.getElementById("favorite-list");
+
+        if (!currentUser) {
+            alert("請先登入");
+            window.location.href = "/login";
+        } else {
+            document.getElementById("welcome-message").textContent = `你好，${currentUser.username}`;
+            document.getElementById("phone").textContent = currentUser.phone || "未提供";
+            document.getElementById("address").textContent = currentUser.address || "未提供";
+            fetchFavorites();
+            fetchApplications();
+        }
+
+        async function fetchFavorites() {
+            try {
+                const response = await fetch(`http://localhost:5000/api/pets/favorites/by-user/${encodeURIComponent(currentUser.username)}`);
+
+                if (!response.ok) {
+                    throw new Error("無法取得收藏清單");
+                }
+
+                const favorites = await response.json();
+
+                if (!favorites.length) {
+                    favoriteList.innerHTML = "<p>目前還沒有收藏寵物。</p>";
+                    return;
+                }
+
+                favoriteList.innerHTML = favorites.map((pet) => {
+                    const status = pet.status || "available";
+                    return `
+                        <article class="application-item">
+                            <img src="${pet.photo_url || ""}" alt="寵物照片">
+                            <div>
+                                <div class="application-title-row">
+                                    <h3>收容編號 ${pet.shelter_id}</h3>
+                                    <span class="status-badge pet-status-${status}">${petStatusText[status] || status}</span>
+                                </div>
+                                <p>${pet.species || "未提供"} · ${pet.age || "未提供"} · ${pet.city || "未提供"}</p>
+                                <a href="/pet-detail?id=${encodeURIComponent(pet.id || pet.shelter_id)}" class="inline-link">查看詳情</a>
+                            </div>
+                        </article>
+                    `;
+                }).join("");
+            } catch (error) {
+                console.error("Favorite list error:", error);
+                favoriteList.innerHTML = "<p>收藏清單載入失敗，請稍後再試。</p>";
+            }
+        }
+
+        async function fetchApplications() {
+            try {
+                const response = await fetch(`http://localhost:5000/adopt/my-applications?username=${encodeURIComponent(currentUser.username)}`);
+
+                if (!response.ok) {
+                    throw new Error("無法取得申請紀錄");
+                }
+
+                const applications = await response.json();
+
+                if (!applications.length) {
+                    applicationList.innerHTML = "<p>目前還沒有領養申請。</p>";
+                    return;
+                }
+
+                applicationList.innerHTML = applications.map((item) => `
+                    <article class="application-item">
+                        <img src="${item.photo_url || ""}" alt="寵物照片">
+                        <div>
+                            <div class="application-title-row">
+                                <h3>收容編號 ${item.pet_id}</h3>
+                                <span class="status-badge status-${item.status}">${statusText[item.status] || item.status}</span>
+                            </div>
+                            <p>${item.species || "未提供"} · ${item.age || "未提供"} · ${item.city || "未提供"}</p>
+                            <p>申請人：${item.name}</p>
+                            <p>居住型態：${item.housing_type || "未提供"} · 每天陪伴：${item.daily_company_time || "未提供"}</p>
+                            <p>送出時間：${new Date(item.created_at).toLocaleString()}</p>
+                        </div>
+                    </article>
+                `).join("");
+            } catch (error) {
+                console.error("Application history error:", error);
+                applicationList.innerHTML = "<p>申請紀錄載入失敗，請稍後再試。</p>";
+            }
+        }
+    </script>
+</body>
+</html>

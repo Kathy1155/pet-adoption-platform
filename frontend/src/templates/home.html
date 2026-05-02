@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寵物領養資訊網</title>
+    <link rel="stylesheet" href="/src/asserts/styles/styles.css">
+    <link rel="icon" href="/src/asserts/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="/">
+                <h1>寵物領養資訊網</h1>
+            </a>
+        </div>
+        <div class="header-right" id="header-actions"></div>
+    </header>
+
+    <div class="all-container">
+        <div class="search-section">
+            <h3>請選擇欲查詢的資料</h3>
+
+            <div class="form-row">
+                <label for="city">縣市:</label>
+                <select id="city">
+                    <option value="" selected>選擇縣市</option>
+                    <option value="台北市">台北市</option>
+                    <option value="新北市">新北市</option>
+                    <option value="桃園市">桃園市</option>
+                    <option value="台中市">台中市</option>
+                    <option value="台南市">台南市</option>
+                    <option value="高雄市">高雄市</option>
+                    <option value="基隆市">基隆市</option>
+                    <option value="新竹市">新竹市</option>
+                    <option value="新竹縣">新竹縣</option>
+                    <option value="苗栗縣">苗栗縣</option>
+                    <option value="彰化縣">彰化縣</option>
+                    <option value="南投縣">南投縣</option>
+                    <option value="花蓮市">花蓮市</option>
+                    <option value="臺東市">臺東市</option>
+                    <option value="宜蘭市">宜蘭市</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="gender">性別:</label>
+                <select id="gender">
+                    <option value="" selected>選擇性別</option>
+                    <option value="公">公</option>
+                    <option value="母">母</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="species">品種/物種:</label>
+                <input type="text" id="species" name="species" placeholder="請輸入品種/物種">
+            </div>
+
+            <div class="form-row">
+                <label for="age">入所年齡:</label>
+                <select id="age" name="age">
+                    <option value="" selected>選擇年齡</option>
+                    <option value="未離乳">未離乳</option>
+                    <option value="幼齡">幼齡</option>
+                    <option value="成年">成年</option>
+                    <option value="老年">老年</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="shelter-id">收容編號:</label>
+                <input type="number" id="shelter-id" name="shelter-id" placeholder="請輸入收容編號" min="1">
+            </div>
+
+            <button type="button" class="btn btn-primary search-button" onclick="searchPets()">查詢</button>
+        </div>
+
+        <div id="pet-list"></div>
+    </div>
+
+    <div class="page-info">目前顯示可查詢寵物資料</div>
+    <button id="scrollToTopBtn" onclick="scrollToTop()">↑</button>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const headerActions = document.getElementById("header-actions");
+        const petStatusText = {
+            available: "可領養",
+            application_pending: "申請中",
+            adopted: "已領養"
+        };
+
+        if (currentUser) {
+            headerActions.innerHTML = `
+                <a href="/profile" class="button">會員中心</a>
+                <a href="#" class="button" onclick="logout()">登出</a>
+            `;
+        } else {
+            headerActions.innerHTML = `
+                <a href="/login" class="button">登入</a>
+                <a href="/register-page" class="button">註冊</a>
+            `;
+        }
+
+        function logout() {
+            localStorage.removeItem("currentUser");
+            window.location.reload();
+        }
+
+        async function fetchPets(queryParams = {}) {
+            try {
+                const queryString = new URLSearchParams(queryParams).toString();
+                const response = await fetch(`http://localhost:5000/api/pets?${queryString}`);
+
+                if (!response.ok) {
+                    throw new Error("無法取得寵物資料");
+                }
+
+                const pets = await response.json();
+
+                if (!Array.isArray(pets)) {
+                    throw new Error("後端資料格式錯誤");
+                }
+
+                const petListDiv = document.getElementById("pet-list");
+                petListDiv.innerHTML = "";
+
+                if (pets.length === 0) {
+                    petListDiv.innerHTML = "<p>沒有找到符合條件的寵物。</p>";
+                    return;
+                }
+
+                pets.forEach((pet) => {
+                    const petStatus = pet.status || "available";
+                    const petDiv = document.createElement("div");
+                    petDiv.className = "pet-card";
+                    petDiv.innerHTML = `
+                        <img src="${pet.photo_url}" alt="${pet.name || pet.shelter_id}" class="pet-photo">
+                        <h3>${pet.shelter_id}</h3>
+                        <p>種類: ${pet.species || "未提供"}</p>
+                        <p>年齡: ${pet.age || "未提供"}</p>
+                        <p>城市: ${pet.city || "未提供"}</p>
+                        <p>性別: ${pet.gender || "未提供"}</p>
+                        <span class="status-badge pet-status-${petStatus}">${petStatusText[petStatus] || petStatus}</span>
+                        <a href="/pet-detail?id=${encodeURIComponent(pet.id || pet.shelter_id)}" class="adopt-btn">查看詳情</a>
+                    `;
+                    petListDiv.appendChild(petDiv);
+                });
+            } catch (error) {
+                console.error("Error fetching pet data:", error);
+                document.getElementById("pet-list").innerHTML = "<p>資料載入失敗，請稍後再試。</p>";
+            }
+        }
+
+        function searchPets() {
+            const queryParams = {
+                city: document.getElementById("city").value.trim(),
+                gender: document.getElementById("gender").value.trim(),
+                species: document.getElementById("species").value.trim(),
+                age: document.getElementById("age").value.trim(),
+                shelterId: document.getElementById("shelter-id").value.trim()
+            };
+
+            Object.keys(queryParams).forEach((key) => {
+                if (!queryParams[key]) {
+                    delete queryParams[key];
+                }
+            });
+
+            if (Object.keys(queryParams).length === 0) {
+                alert("請至少選擇或輸入一個查詢條件");
+                return;
+            }
+
+            fetchPets(queryParams);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => fetchPets());
+
+        window.onscroll = function() {
+            const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+            scrollToTopBtn.style.display =
+                document.body.scrollTop > 100 || document.documentElement.scrollTop > 100 ? "block" : "none";
+        };
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    </script>
+</body>
+</html>

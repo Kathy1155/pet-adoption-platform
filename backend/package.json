@@ -1,0 +1,29 @@
+{
+    "name": "pet-backend",
+    "version": "1.0.0",
+    "description": "This project aims to implement pet adoption page so that we can create a better life for homeless pets.",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "test": "nodemon index.js"
+    },
+    "author": "Kathy Lu",
+    "license": "ISC",
+    "dependencies": {
+        "bcrypt": "^5.1.1",
+        "body-parser": "^1.20.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^4.21.1",
+        "multer": "^1.4.5-lts.1",
+        "mysql2": "^3.11.5",
+        "nodemon": "^3.1.7",
+        "pet-adoption-platform": "file:..",
+        "prettier": "^3.3.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "pet"
+    },
+    "proxy": "http://localhost:5000"
+}
