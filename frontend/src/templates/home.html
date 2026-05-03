@@ -132,12 +132,30 @@
                     return;
                 }
 
+                if (currentUser) {
+                    await Promise.all(pets.map(async (pet) => {
+                        const favoriteId = pet.id || pet.shelter_id;
+                        pet.isFavorited = await fetchFavoriteStatus(favoriteId);
+                    }));
+                }
+
                 pets.forEach((pet) => {
                     const petStatus = pet.status || "available";
+                    const favoriteId = pet.id || pet.shelter_id;
                     const petDiv = document.createElement("div");
                     petDiv.className = "pet-card";
                     petDiv.innerHTML = `
-                        <img src="${pet.photo_url}" alt="${pet.name || pet.shelter_id}" class="pet-photo">
+                        <div class="pet-card-photo-wrap">
+                            <img src="${pet.photo_url}" alt="${pet.name || pet.shelter_id}" class="pet-photo">
+                            <button
+                                type="button"
+                                class="favorite-star-button pet-card-favorite ${pet.isFavorited ? "is-favorited" : ""}"
+                                aria-label="${pet.isFavorited ? "取消收藏" : "加入收藏"}"
+                                title="${pet.isFavorited ? "取消收藏" : "加入收藏"}"
+                                data-favorited="${pet.isFavorited ? "true" : "false"}"
+                                onclick="toggleHomeFavorite('${encodeURIComponent(favoriteId)}', this)"
+                            >${pet.isFavorited ? "★" : "☆"}</button>
+                        </div>
                         <h3>${pet.shelter_id}</h3>
                         <p>種類: ${pet.species || "未提供"}</p>
                         <p>年齡: ${pet.age || "未提供"}</p>
@@ -152,6 +170,49 @@
                 console.error("Error fetching pet data:", error);
                 document.getElementById("pet-list").innerHTML = "<p>資料載入失敗，請稍後再試。</p>";
             }
+        }
+
+        async function fetchFavoriteStatus(id) {
+            if (!currentUser) {
+                return false;
+            }
+
+            const response = await fetch(`http://localhost:5000/api/pets/${encodeURIComponent(id)}/favorite?username=${encodeURIComponent(currentUser.username)}`);
+            if (!response.ok) {
+                return false;
+            }
+
+            const data = await response.json();
+            return data.favorited;
+        }
+
+        async function toggleHomeFavorite(encodedId, button) {
+            if (!currentUser) {
+                alert("請先登入會員才能收藏寵物");
+                window.location.href = "/login";
+                return;
+            }
+
+            const favorited = button.dataset.favorited === "true";
+            const response = await fetch(`http://localhost:5000/api/pets/${encodedId}/favorite`, {
+                method: favorited ? "DELETE" : "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username: currentUser.username })
+            });
+
+            if (!response.ok) {
+                alert("收藏狀態更新失敗");
+                return;
+            }
+
+            const nextFavorited = !favorited;
+            button.dataset.favorited = nextFavorited ? "true" : "false";
+            button.classList.toggle("is-favorited", nextFavorited);
+            button.textContent = nextFavorited ? "★" : "☆";
+            button.setAttribute("aria-label", nextFavorited ? "取消收藏" : "加入收藏");
+            button.setAttribute("title", nextFavorited ? "取消收藏" : "加入收藏");
         }
 
         function searchPets() {
