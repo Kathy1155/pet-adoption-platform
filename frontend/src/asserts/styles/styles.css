@@ -788,6 +788,21 @@ input {
     color: #6d5f52;
 }
 
+.profile-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid #eee4cf;
+}
+
+.profile-form .auth-submit {
+    grid-column: 1 / -1;
+    justify-self: start;
+    min-width: 180px;
+}
+
 .section-heading,
 .application-title-row {
     display: flex;
@@ -910,6 +925,7 @@ input {
     }
 
     .profile-grid,
+    .profile-form,
     .application-item {
         grid-template-columns: 1fr;
     }

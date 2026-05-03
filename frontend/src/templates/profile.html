@@ -25,6 +25,30 @@
                 <p><strong>電話</strong><span id="phone"></span></p>
                 <p><strong>住址</strong><span id="address"></span></p>
             </div>
+
+            <form id="profile-form" class="profile-form">
+                <div class="auth-field">
+                    <label for="profile-username">帳號名稱</label>
+                    <input type="text" id="profile-username" readonly>
+                </div>
+
+                <div class="auth-field">
+                    <label for="profile-phone">電話</label>
+                    <input type="text" id="profile-phone" required>
+                </div>
+
+                <div class="auth-field">
+                    <label for="profile-address">住址</label>
+                    <input type="text" id="profile-address" required>
+                </div>
+
+                <div class="auth-field">
+                    <label for="profile-password">新密碼</label>
+                    <input type="password" id="profile-password" placeholder="不修改可留空">
+                </div>
+
+                <button type="submit" class="auth-submit">儲存會員資料</button>
+            </form>
         </section>
 
         <section class="dashboard-card" id="favorites">
@@ -61,6 +85,7 @@
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
         const applicationList = document.getElementById("application-list");
         const favoriteList = document.getElementById("favorite-list");
+        const profileForm = document.getElementById("profile-form");
 
         if (!currentUser) {
             alert("請先登入");
@@ -69,9 +94,53 @@
             document.getElementById("welcome-message").textContent = `你好，${currentUser.username}`;
             document.getElementById("phone").textContent = currentUser.phone || "未提供";
             document.getElementById("address").textContent = currentUser.address || "未提供";
+            document.getElementById("profile-username").value = currentUser.username || "";
+            document.getElementById("profile-phone").value = currentUser.phone || "";
+            document.getElementById("profile-address").value = currentUser.address || "";
             fetchFavorites();
             fetchApplications();
         }
+
+        profileForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const formData = {
+                username: currentUser.username,
+                phone: document.getElementById("profile-phone").value.trim(),
+                address: document.getElementById("profile-address").value.trim(),
+                password: document.getElementById("profile-password").value.trim()
+            };
+
+            if (!formData.phone || !formData.address) {
+                alert("請完整填寫電話與住址");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:5000/api/user/profile", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "會員資料更新失敗");
+                }
+
+                localStorage.setItem("currentUser", JSON.stringify(data.user));
+                document.getElementById("phone").textContent = data.user.phone || "未提供";
+                document.getElementById("address").textContent = data.user.address || "未提供";
+                document.getElementById("profile-password").value = "";
+                alert(data.message || "會員資料已更新");
+            } catch (error) {
+                console.error("Profile update error:", error);
+                alert(error.message || "會員資料更新失敗");
+            }
+        });
 
         async function fetchFavorites() {
             try {
