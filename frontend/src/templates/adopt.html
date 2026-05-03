@@ -123,8 +123,17 @@
             petIdInput.placeholder = "請先從寵物詳細頁進入申請";
         }
 
+        function fillInputIfEmpty(id, value) {
+            const input = document.getElementById(id);
+            if (input && value && !input.value.trim()) {
+                input.value = value;
+            }
+        }
+
         if (currentUser) {
-            document.getElementById("phone").value = currentUser.phone || "";
+            fillInputIfEmpty("name", currentUser.name || currentUser.username);
+            fillInputIfEmpty("phone", currentUser.phone);
+            fillInputIfEmpty("email", currentUser.email);
         }
 
         document.getElementById("adoption-form").addEventListener("submit", function(event) {
