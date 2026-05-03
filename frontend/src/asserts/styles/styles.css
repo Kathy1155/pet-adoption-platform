@@ -803,6 +803,16 @@ input {
     min-width: 180px;
 }
 
+.profile-form input:disabled {
+    color: #6d6258;
+    background-color: #f3eee2;
+    cursor: not-allowed;
+}
+
+.hidden {
+    display: none !important;
+}
+
 .section-heading,
 .application-title-row {
     display: flex;
